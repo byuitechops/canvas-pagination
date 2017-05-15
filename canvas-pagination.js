@@ -65,7 +65,6 @@ function makeCall(call, cbMakeCall) {
         }, function (error) {
             cbMakeCall(error, null);
         });
-
 }
 
 //when the first call is made below, it checks if there is a last url
@@ -120,19 +119,22 @@ function getAllPages(domain, call, queryObj, cb) {
         //save the first one
         firstVal = JSON.parse(response.body);
         //parse the link data    
-        var linkObj = getLinksObj(response.headers.link);
+        var linkObj = getLinksObj(response.headers.link),
+            hasLast = typeof linkObj.last !== 'undefined',
+            hasCurrent = typeof linkObj.current !== 'undefined',
+            hasNext = typeof linkObj.next !== 'undefined';
 
-        //check if there is a last
-        if (typeof linkObj.last !== 'undefined' && linkObj.last.page !== 0) {
+        if (hasLast && linkObj.last.page === 1) {
+            //is there only one page?
+            console.log(chalk.red('Did "' + urlBase + '" really only have one page?'));
+            cb(null, firstVal);
+        } else if (hasLast && linkObj.last.page !== 0) {
+            //did it tell us the last page or do we have to get them a page at a time?
             getTheRest(firstVal, urlBase, queryObj, linkObj, cb);
         } else if (typeof linkObj.next !== 'undefined' && linkObj.next.page !== 0) {
+            //yep we have to get it a page at a time
             getOneByOne();
-        } else {
-            //only had one page?
-            console.log(chalk.red('Did "' + urlBase + '" really only have one page?'));
-            cb(null, arrayOut);
         }
-
     });
 
 
