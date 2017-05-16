@@ -84,7 +84,7 @@ function getTheRest(firstVal, urlBase, query, linkObj, cb) {
 
     //console.log('calls:', calls);
     //go get them all
-    asyncLib.map(calls, makeCall, function (err, requests) {
+    asyncLib.mapLimit(calls, 25, makeCall, function (err, requests) {
         if (err) {
             cb(err, null);
             return;
@@ -126,7 +126,7 @@ function getAllPages(domain, call, queryObj, cb) {
 
         if (hasLast && linkObj.last.page === 1) {
             //is there only one page?
-            console.log(chalk.red('Did "' + urlBase + '" really only have one page?'));
+            console.log(chalk.green('Did "' + urlBase + '" really only have one page?'));
             cb(null, firstVal);
         } else if (hasLast && linkObj.last.page !== 0) {
             //did it tell us the last page or do we have to get them a page at a time?
