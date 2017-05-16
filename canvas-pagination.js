@@ -84,7 +84,7 @@ function getTheRest(firstVal, urlBase, query, linkObj, cb) {
 
     //console.log('calls:', calls);
     //go get them all
-    asyncLib.mapLimit(calls, 25, makeCall, function (err, requests) {
+    asyncLib.mapLimit(calls, 1, makeCall, function (err, requests) {
         if (err) {
             cb(err, null);
             return;
@@ -99,9 +99,6 @@ function getTheRest(firstVal, urlBase, query, linkObj, cb) {
         cb(null, arrayOut);
 
     });
-
-
-
 }
 
 
