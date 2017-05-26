@@ -10,8 +10,6 @@
     "type": "git",
     "url": "git+https://github.com/byuitechops/canvas-pagination.git"
   },
-  "author": "Joshua McKinney",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/byuitechops/canvas-pagination/issues"
   },
@@ -23,5 +21,7 @@
   },
   "devDependencies": {
     "d3-dsv": "^1.0.5"
-  }
+  },
+  "author": "Joshua McKinney",
+  "license": "MIT"
 }
