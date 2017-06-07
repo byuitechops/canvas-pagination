@@ -1,16 +1,24 @@
 /*eslint-env node*/
 /*eslint no-unused-vars:2, no-console:0, no-undefined:2*/
 
-var got = require('got'),
+var request = require('request'),
     asyncLib = require('async'),
     chalk = require('chalk'),
-    querystring = require('querystring');;
+    querystring = require('querystring');
 
 
 //takes a balse url string and adds all the query vars
 function makeUrlString(urlIn, query) {
-    stringOut = urlIn + '?' + querystring.stringify(query);
-    //console.log(chalk.gray(stringOut));
+    var stringOut;
+    //console.log(query);
+    if (typeof query === 'string') {
+        stringOut = urlIn + '?' + query;
+    } else {
+        stringOut = urlIn + '?' + querystring.stringify(query);
+        //console.log(chalk.gray(stringOut));
+    }
+
+    //console.log(stringOut);
 
     return stringOut;
 }
@@ -58,13 +66,15 @@ function getLinksObj(links) {
 /* makes one call*/
 function makeCall(call, cbMakeCall) {
     //console.log(chalk.yellow(call));
-    got(call)
-        .then(function (response) {
-            //console.log(chalk.green(call));
-            cbMakeCall(null, response);
-        }, function (error) {
+
+    // Convert to request
+    request(call, function (error, response, body) {
+        if (error) {
             cbMakeCall(error, null);
-        });
+        }
+
+        cbMakeCall(null, response);
+    });
 }
 
 //when the first call is made below, it checks if there is a last url
@@ -74,8 +84,6 @@ function getTheRest(firstVal, urlBase, query, linkObj, cb) {
         arrayOut = [firstVal],
         i;
 
-
-
     //make array of all the calls
     for (i = linkObj.next.page; i <= linkObj.last.page; ++i) {
         query.page = i;
@@ -84,7 +92,7 @@ function getTheRest(firstVal, urlBase, query, linkObj, cb) {
 
     //console.log('calls:', calls);
     //go get them all
-    asyncLib.mapLimit(calls, 1, makeCall, function (err, requests) {
+    asyncLib.mapLimit(calls, 5, makeCall, function (err, requests) {
         if (err) {
             cb(err, null);
             return;
